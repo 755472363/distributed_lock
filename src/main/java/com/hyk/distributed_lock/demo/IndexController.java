@@ -282,6 +282,7 @@ public class IndexController {
         RLock lock = redisson.getLock(lockKey);
         try {
             lock.tryLock();
+            lock.tryLock(12L,12L,TimeUnit.SECONDS);
 
             int stock = Integer.parseInt(stringRedisTemplate.opsForValue().get("stock_hyk"));
             if (stock > 0) {
@@ -296,8 +297,18 @@ public class IndexController {
         }
     }
 
+
+
+
+
+
+
+
+
     /* 结束语：
      * 虽然看起来已经很完善了，但是还有一点点问题如果哨兵模式，或者集群模式，锁加载master上面，还未同步到slave的时候，master挂了，这个重新选举，新的master上面是没有加锁的。
+     *
+     *
      * 不过这种几率已经很小很小了，如果是在要求强一致性，那么就只有选择zookeeper来实现，因为zookeeper是强一致性的，它是多数节点数据都同步好了才返回。
      * Master挂了，选举也是在数据一致的节点中，因此重新选上来leader肯定是有锁的。当然ZK的性能肯定就没有redis的高了，怎么选择还是看自己业务是否允许。
      */
