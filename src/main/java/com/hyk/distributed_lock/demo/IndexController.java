@@ -37,7 +37,7 @@ public class IndexController {
     }
 
     /**
-     * redis 中库存有50个,减库存逻辑
+     * redis中，库存有10个,减库存逻辑
      * 最初版本，多线程情况下，会有线程并发问题：
      */
     private void version1() throws Exception {
@@ -69,18 +69,15 @@ public class IndexController {
     }
 
     /**
+     * 从这里，进入redis实现分布式锁
+     * 遇到了各种各样的问题，然后不断解决，最后得到了一个比较完美的版本
+     * 接下来每个版本，我们自己要思考一下有啥问题，然后咋解决
+     * /
+
+    /**
      * 用setNX    http://doc.redisfans.com/
-     * <p>
-     * SETNX key value
-     * 将 key 的值设为 value ，当且仅当 key 不存在。
-     * 若给定的 key 已经存在，则 SETNX 不做任何动作。
-     * 返回值：
-     * 设置成功，返回 1 。
-     * 设置失败，返回 0 。
-     * <p>
-     * <p>
      * 这样就可以解决分布式高并发问题：
-     * <p>
+     *
      * 但是有问题：异常，死锁等；
      * 抛异常了，线程中断，key一直存在，则发生死锁；后边的减库存一直存在；
      */
