@@ -198,8 +198,8 @@ public class IndexController {
 
     /**
      * 解决方式：通过stock_keyValue隔离，可以解决的问题
-     * 这样只是保证自己的锁不被别人删掉，但是这个判断再删除的操作也不是原子操作，同时超时的问题还是没有解决
-     * (极限例子：失效时间1s,多个线程过来，多次操作数据库，有数据库io，导致多个线程操作，还存在原子代码段问题)
+     * 还是有问题：
+     * 锁失效时间是固定的，锁还是会失效，导致超卖问题
      *
      * 问题1：随机的clientId，多个请求可以进来，导致锁失效；
      * lockKey是一样的，多个请求针对同一个lockKey会被限制住
@@ -283,7 +283,7 @@ public class IndexController {
         RLock lock = redisson.getLock(lockKey);
         try {
             lock.tryLock();
-            //lock.tryLock(60,TimeUnit.SECONDS);
+//            lock.tryLock(60,TimeUnit.SECONDS);
             int stock = Integer.parseInt(stringRedisTemplate.opsForValue().get("stock_hyk"));
             if (stock > 0) {
                 int realStock = stock - 1;
