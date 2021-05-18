@@ -105,6 +105,8 @@ public class IndexController {
     /**
      * 解决死锁方案，try  finally:
      * 问题：代码执行到半中间，挂了，比如重启服务（睡眠10s模拟），finally没有执行到，又发生死锁；
+     *
+     * 释放锁 和 countDownLatch   latch.countDown();需要放到在finally里，避免异常导致的死锁，线程阻塞
      */
     private void version4() throws Exception {
         String lockKey = "stock_key";
